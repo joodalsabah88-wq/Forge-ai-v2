@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Studio Lite AI</title>
+
+<style>
+
+* {
+
+    box-sizing: border-box;
+
+}
+
+body {
+
+    margin: 0;
+
+    background: #0b0714;
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+
+}
+
+header {
+
+    padding: 20px;
+
+    background: #160d27;
+
+    border-bottom: 1px solid #39205b;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+.logo {
+
+    font-size: 23px;
+
+    font-weight: bold;
+
+    color: #bd83ff;
+
+}
+
+.badge {
+
+    background: #352052;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+}
+
+.container {
+
+    max-width: 850px;
+
+    margin: 55px auto;
+
+    padding: 20px;
+
+}
+
+h1 {
+
+    font-size: 35px;
+
+    text-align: center;
+
+}
+
+.subtitle {
+
+    text-align: center;
+
+    color: #a99bbd;
+
+}
+
+.box {
+
+    margin-top: 35px;
+
+    background: #170f25;
+
+    border: 1px solid #56317c;
+
+    border-radius: 15px;
+
+    padding: 20px;
+
+}
+
+textarea {
+
+    width: 100%;
+
+    height: 130px;
+
+    resize: vertical;
+
+    background: #0d0916;
+
+    border: 1px solid #392653;
+
+    border-radius: 10px;
+
+    padding: 15px;
+
+    color: white;
+
+    font-size: 15px;
+
+    outline: none;
+
+}
+
+textarea:focus {
+
+    border-color: #ad68ff;
+
+}
+
+button {
+
+    border: none;
+
+    border-radius: 9px;
+
+    padding: 13px 20px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+.generate {
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    background: linear-gradient(90deg,#843bdb,#bd67ff);
+
+    color: white;
+
+    font-size: 16px;
+
+}
+
+.generate:hover {
+
+    opacity: .85;
+
+}
+
+.output {
+
+    margin-top: 25px;
+
+    background: #100b19;
+
+    border: 1px solid #392653;
+
+    border-radius: 12px;
+
+    padding: 18px;
+
+    min-height: 120px;
+
+    white-space: pre-wrap;
+
+    overflow-wrap: anywhere;
+
+}
+
+.output-title {
+
+    color: #bd83ff;
+
+    margin-bottom: 12px;
+
+}
+
+.copy {
+
+    background: #6333a0;
+
+    color: white;
+
+    margin-top: 12px;
+
+}
+
+.examples {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-top: 15px;
+
+}
+
+.examples button {
+
+    background: #28183d;
+
+    color: #d9baff;
+
+}
+
+footer {
+
+    text-align: center;
+
+    color: #756785;
+
+    padding: 30px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+    <div class="logo">⚡ Studio Lite AI</div>
+
+    <div class="badge">V2 • AI BUILDER</div>
+
+</header>
+
+<div class="container">
+
+<h1>What are we building?</h1>
+
+<p class="subtitle">
+
+Describe your Roblox game idea. Let AI help build it.
+
+</p>
+
+<div class="box">
+
+<textarea id="prompt"
+
+placeholder="Example: Make a simulator with coins, pets, rebirths and a shop..."></textarea>
+
+<div class="examples">
+
+<button onclick="example('Make a coin collecting simulator')">Simulator</button>
+
+<button onclick="example('Make a horror game system')">Horror</button>
+
+<button onclick="example('Make an admin panel')">Admin GUI</button>
+
+<button onclick="example('Make a pet simulator')">Pets</button>
+
+</div>
+
+<button class="generate" onclick="generate()">
+
+⚡ GENERATE
+
+</button>
+
+<div class="output">
+
+<div class="output-title">AI OUTPUT</div>
+
+<div id="result">Your generated script will appear here...</div>
+
+</div>
+
+<button class="copy" onclick="copyCode()">📋 Copy Output</button>
+
+</div>
+
+</div>
+
+<footer>
+
+Studio Lite AI • Built for Roblox creators
+
+</footer>
+
+<script>
+
+function example(text) {
+
+    document.getElementById("prompt").value = text;
+
+}
+
+async function generate() {
+
+    const prompt = document.getElementById("prompt").value.trim();
+
+    const result = document.getElementById("result");
+
+    if (!prompt) {
+
+        result.textContent = "Please describe what you want to build!";
+
+        return;
+
+    }
+
+    result.textContent = "Connecting to AI...";
+
+    try {
+
+        const response = await fetch("/api/generate", {
+
+            method: "POST",
+
+            headers: {
+
+                "Content-Type": "application/json"
+
+            },
+
+            body: JSON.stringify({ prompt })
+
+        });
+
+        if (!response.ok) throw new Error("AI server unavailable");
+
+        const data = await response.json();
+
+        result.textContent = data.code;
+
+    } catch (error) {
+
+        result.textContent =
+
+            "AI backend is not connected yet!\n\n" +
+
+            "Your prompt: " + prompt +
+
+            "\n\nNext step: Connect the AI backend.";
+
+    }
+
+}
+
+function copyCode() {
+
+    const text = document.getElementById("result").textContent;
+
+    navigator.clipboard.writeText(text)
+
+        .then(() => alert("Copied!"));
+
+}
+
+</script>
+
+</body>
+
+</html>
